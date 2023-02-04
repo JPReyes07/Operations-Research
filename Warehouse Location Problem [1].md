@@ -27,6 +27,7 @@ We want to meet weekly demands at minimum cost, subject to the preceding informa
 
 Let $x_{ij}$ be the amount of units shipped from city $i$ to region $j$ <br /><br />
 Let
+
 $$ y_{i} = \begin{cases}
   \displaystyle 1; & \text{set up warehouse at city $i$} \\
   \displaystyle 0; & \text{else}
@@ -40,9 +41,47 @@ such that $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$
 The objective function is based on two important metrics: (1) the weekly fixed cost in maintaining the warehouse open and (2) the shipping costs to the regions. Given that the function is created from business costs, it is therefore necessary to minimize this model. <br /><br />
 </div>
 
-$Z = 400y_{N} + 500y_{Y} + 300y_{L} + 150y_{A} + \sum\limits_{i} \sum\limits_{j} {c_{ij}x_{ij}}$ <br /> 
-such that $c_{ij}$ refers to the shipping cost from city $i$ to region $j$ for all $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$
+$$ Z = 400y_{N} + 500y_{L} + 300y_{C} + 150y_{A} + \sum\limits_{i} \sum\limits_{j} {c_{ij}x_{ij}} $$ <br /> 
 
+such that $c_{ij}$ refers to the shipping cost from city $i$ to region $j$ for all $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$ as shown in the table.
+
+### Constraints
+
+**Demand Constraints**: <br />
+
+$$x_{N1}+x_{L1}+x_{C1}+x_{A1} = 80$$ <br />
+
+$$x_{N2}+x_{L2}+x_{C2}+x_{A2} = 70$$ <br />
+
+$$x_{N3}+x_{L3}+x_{C3}+x_{A3} = 40$$ <br />
+
+**Supply Constraints**: <br />
+
+$$x_{N1}+x_{N2}+x_{N3} \le 100y_{N}$$ <br />
+
+$$x_{L1}+x_{L2}+x_{L3} \le 100y_{L}$$ <br />
+
+$$x_{C1}+x_{C2}+x_{C3} \le 100y_{C}$$ <br />
+
+$$x_{A1}+x_{A2}+x_{A3} \le 100y_{A}$$ <br />
+
+**Decision Constraints**: <br />
+
+1. If the New York warehouse is opened, then the Los Angeles warehouse must be opened.
+
+$$y_{N} - y_{L} \le 0$$ 
+
+2. At most two warehouses can be opened.
+
+$$y_{N} + y_{L} + y_{C} + y_{A} \le 2$$ 
+
+3. Either the Atlanta or the Los Angeles warehouse must be opened.
+
+$$y_{L} + y_{A} = 1$$ 
+
+
+At the core of this algorithm lies the effective use of binary variables to lead the decision-making process on which city should warehouses be built. Here, if $y_{i}$ is 0, then the city will have **no** warehouse, and thus will not produce any units for the regions. Conversely, a value of one permits the production and delivery.
+<br /><br />
 
 ## Python Implementation
 ```python
