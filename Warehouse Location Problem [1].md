@@ -84,7 +84,73 @@ At the core of this algorithm lies the effective use of binary variables to lead
 <br /><br />
 
 ## Python Implementation
+
+**1. Instantiate the model through the PuLP module**
 ```python
 from pulp import *
+
+model = LpProblem('milp', LpMinimize)
+```
+
+**2. Create a dataframe of the necessary data**
+```python
 import pandas as pd
+
+data_fixcost = {'NewYork': [400],
+                'LosAngeles': [500],
+                'Chicago': [300],
+                'Atlanta': [150]}
+
+data_shipcost = {'Region1': [20, 48, 26, 24],
+                 'Region2': [40, 15, 35, 50],
+                 'Region3': [50, 26, 18, 35]}
+
+data_demand = {'Region1': [80],
+               'Region2': [70],
+               'Region3': [40]}
+
+df_shipcost = pd.DataFrame(data_shipcost, index=['NewYork', 'LosAngeles', 'Chicago', 'Atlanta'])
+df_fixcost = pd.DataFrame(data_fixcost, index=['FixedCost'])
+df_demand = pd.DataFrame(data_demand, index=['Demand'])
+```
+
+**3. Create the binary variables**
+```python
+binvars = {}
+for l in df_fixcost.columns:
+    binvars[l] = LpVariable(l, 0, 1, LpBinary)
+```
+
+**4. Create the continuous variables**
+```python
+contvars = {}
+for l in df_shipcost.index:
+    for r in df_shipcost.columns:
+        contvars[l, r] = LpVariable('%s_to_%s' % (l, r), 0, None, LpContinuous)
+```
+
+**5. Formulate the objective function**
+```python
+model += sum(df_fixcost[l].item() * binvars[l] for l in df_fixcost.columns) \
+         + sum(df_shipcost._get_value(df_shipcost.index.get_loc(l), df_shipcost.columns.get_loc(r), takeable=True) * contvars[(l, r)] for l in df_shipcost.index for r in df_shipcost.columns)
+```
+
+**6. Formulate the constraints**
+```python
+for r in df_shipcost.columns:
+    model += sum(contvars[(l, r)] for l in df_shipcost.index) >= df_demand[r].item(), 'Demand Constraint of %s' % (r)
+for l in df_shipcost.index:
+    model += sum(contvars[(l, r)] for r in df_shipcost.columns) - 100 * binvars[l] <= 0, 'Delivery Amounts of %s' % (l)
+
+model += binvars['NewYork'] - binvars['LosAngeles'] <= 0, 'dc1'
+model += sum(binvars[l] for l in df_shipcost.index) <= 2, 'dc2'
+model += binvars['LosAngeles'] + binvars['Atlanta'] == 1, 'dc3'
+```
+
+**7. Run the module**
+```python
+model.solve()
+
+for v in model.variables():
+    print('%s: %g' % (v.name, v.varValue))
 ```
