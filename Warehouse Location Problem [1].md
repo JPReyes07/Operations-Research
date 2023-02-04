@@ -26,12 +26,22 @@ We want to meet weekly demands at minimum cost, subject to the preceding informa
 ### Variable Definitions
 
 Let $x_{ij}$ be the amount of units shipped from city $i$ to region $j$ <br /><br />
-Let $y_{i}$ = 
-
-$$\begin{cases}
+Let
+$$ y_{i} = \begin{cases}
   \displaystyle 1; & \text{set up warehouse at city $i$} \\
   \displaystyle 0; & \text{else}
 \end{cases}$$
+
+such that $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$
+
+### Objective Function
+
+<div align='justify';>
+The objective function is based on two important metrics: (1) the weekly fixed cost in maintaining the warehouse open and (2) the shipping costs to the regions. Given that the function is created from business costs, it is therefore necessary to minimize this model. <br /><br />
+</div>
+
+$Z = 400y_{N} + 500y_{Y} + 300y_{L} + 150y_{A} + \sum\limits_{i} \sum\limits_{j} {c_{ij}x_{ij}}$ <br /> 
+such that $c_{ij}$ refers to the shipping cost from city $i$ to region $j$ for all $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$
 
 
 ## Python Implementation
