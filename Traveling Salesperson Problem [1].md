@@ -119,7 +119,7 @@ Arbitrarily, we shall cut off the path between projects 1 and 2 with additional 
 5_to_1
 6_to_2
 ```
-This solution shows only two subtours: **(2-6-2)(1-3-4-5-1)** and still with only **26 people** moving in-between rooms.
+This solution shows only two subtours: **(2-6-2)(1-3-4-5-1)** and only **26 people** moving in-between rooms.
 
 ###  Case 2: $y_{21} = 0$
 ```
@@ -130,7 +130,7 @@ This solution shows only two subtours: **(2-6-2)(1-3-4-5-1)** and still with onl
 5_to_1
 6_to_5
 ```
-This solution shows only two subtours: **(3-4-3)(1-2-6-5-1)** and still with only **26 people** moving in-between rooms. <br /><br />
+This solution shows only two subtours: **(3-4-3)(1-2-6-5-1)** and with **26 people** moving in-between rooms. <br /><br />
 Both cases still show disconnected paths. Therefore, we shall further explore subcases within each case.
 
 
@@ -177,7 +177,7 @@ This solution shows a single path with **(1-2-6-5-4-3-1)** and still with **26 p
 5_to_4
 6_to_2
 ```
-This solution shows a three subtours with **(1-3-1)(2-6-2)(4-5-4)** and with **26 people** moving in-between rooms. The complete analysis from this route will not be shown in this documentation; however, it was discovered that one subcase yielded worse Z values and another repeated the sequence form Case 1b.
+This solution shows three subtours with **(1-3-1)(2-6-2)(4-5-4)** and still with **26 people** moving in-between rooms. The complete analysis strating from this node will not be shown in this documentation. However, it was discovered that one subcase yielded a worse Z value and another repeated the sequence form Case 1b.
 
 
 ## Results and Conclusion
