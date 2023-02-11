@@ -13,128 +13,84 @@ Currently, the manager meets individually once a week with each employee. Each m
 </div>
 
 ## Modeling
+
+Before creating a linear programming model, it is first necessary to concisely define the term *traffic* - the factor of interest in the problem. 
+
+*Traffic* in this case can be thought of as the employees belonging to the **complement of the intersection** between two projects. Given two successive project meetings, the people that will simply stay in the room are those handling both the projects, while those in the room but not needed shall leave and the employees who are needed from the outside will, in turn, enter. As an example, if the meetings of Project 1 (employees 1, 3, 4, and 9) and Project 2 (employees 2, 4, 8, and 9) are in succession, then four employees (1, 2, 3, and 8) will leave/enter the room. The number of people moving in-between rooms is used in the cost matrix of this TSP.
+
+```
+      1     2     3     4     5     6
+1  8000     4     4     6     6     5
+2     4  8000     6     4     6     3
+3     4     6  8000     4     8     7
+4     6     4     4  8000     6     5
+5     6     6     8     6  8000     5
+6     5     3     7     5     5  8000
+```
+
+To clarify, the rows (from) and columns (to) represent the projects.
+
+This TSP will be solved via the **Branch-and-Bound Method** of the Integer Linear Programming Problem. 
+
 ### Variable Definitions
 
-Let $x_{ij}$ be the amount of units shipped from city $i$ to region $j$ <br /><br />
-Let
-
-$$ y_{i} = \begin{cases}
-  \displaystyle 1; & \text{set up warehouse at city $i$} \\
+$$ y_{ij} = \begin{cases}
+  \displaystyle 1; & \text{move from project $i$ to project $j$} \\
   \displaystyle 0; & \text{else}
 \end{cases}$$
 
-such that $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$
+such that $i \in {(1, 2, 3, 4, 5, 6)}$ and $j \in {(1, 2, 3, 4, 5, 6)}$
 
 ### Objective Function
 
-<div align='justify';>
-The objective function is based on two important metrics: (1) the weekly fixed cost in maintaining the warehouse open and (2) the shipping costs to the regions. Given that the function is created from business costs, it is therefore necessary to minimize this model. <br /><br />
-</div>
+$$ \min Z = \sum\limits_{i} \sum\limits_{j} {c_{ij}y_{ij}} $$ <br /> 
 
-$$ Z = 400y_{N} + 500y_{L} + 300y_{C} + 150y_{A} + \sum\limits_{i} \sum\limits_{j} {c_{ij}x_{ij}} $$ <br /> 
-
-such that $c_{ij}$ refers to the shipping cost from city $i$ to region $j$ for all $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$ as shown in the table.
+such that $c_{ij}$ refers to the traffic in-between consecutive projects as shown in the matrix above.
 
 ### Constraints
 
-**Demand Constraints**: <br />
+$$ \sum\limits_{j}^{6} {y_{ij}} = 1 \text{ for } i \in (1, 2, 3, 4, 5, 6) $$
 
-$$x_{N1}+x_{L1}+x_{C1}+x_{A1} = 80$$ <br />
-
-$$x_{N2}+x_{L2}+x_{C2}+x_{A2} = 70$$ <br />
-
-$$x_{N3}+x_{L3}+x_{C3}+x_{A3} = 40$$ <br />
-
-**Supply Constraints**: <br />
-
-$$x_{N1}+x_{N2}+x_{N3} \le 100y_{N}$$ <br />
-
-$$x_{L1}+x_{L2}+x_{L3} \le 100y_{L}$$ <br />
-
-$$x_{C1}+x_{C2}+x_{C3} \le 100y_{C}$$ <br />
-
-$$x_{A1}+x_{A2}+x_{A3} \le 100y_{A}$$ <br />
-
-**Decision Constraints**: <br />
-
-1. If the New York warehouse is opened, then the Los Angeles warehouse must be opened.
-
-$$y_{N} - y_{L} \le 0$$ 
-
-2. At most two warehouses can be opened.
-
-$$y_{N} + y_{L} + y_{C} + y_{A} \le 2$$ 
-
-3. Either the Atlanta or the Los Angeles warehouse must be opened.
-
-$$y_{L} + y_{A} = 1$$ 
-
-
-At the core of this algorithm lies the effective use of binary variables to lead the decision-making process on which city should warehouses be built. Here, if $y_{i}$ is 0, then the city will have **no** warehouse, and thus will not produce any units for the regions. Conversely, a value of one permits the production and delivery.
-<br /><br />
-
-## Python Implementation
+## General Python Implementation
 
 **1. Instantiate the model through the PuLP module**
 ```python
 from pulp import *
 
-model = LpProblem('milp', LpMinimize)
+model = LpProblem('tsp', LpMinimize)
 ```
 
 **2. Create a dataframe of the necessary data**
 ```python
 import pandas as pd
 
-data_fixcost = {'NewYork': [400],
-                'LosAngeles': [500],
-                'Chicago': [300],
-                'Atlanta': [150]}
+data = {1: [8000, 4, 4, 6, 6, 5], 2: [4, 8000, 6, 4, 6, 3],
+        3: [4, 6, 8000, 4, 8, 7], 4: [6, 4, 4, 8000, 6, 5],
+        5: [6, 6, 8, 6, 8000, 5], 6: [5, 3, 7, 5, 5, 8000]}
 
-data_shipcost = {'Region1': [20, 48, 26, 24],
-                 'Region2': [40, 15, 35, 50],
-                 'Region3': [50, 26, 18, 35]}
-
-data_demand = {'Region1': [80],
-               'Region2': [70],
-               'Region3': [40]}
-
-df_shipcost = pd.DataFrame(data_shipcost, index=['NewYork', 'LosAngeles', 'Chicago', 'Atlanta'])
-df_fixcost = pd.DataFrame(data_fixcost, index=['FixedCost'])
-df_demand = pd.DataFrame(data_demand, index=['Demand'])
+df = pd.DataFrame(data, index=[1, 2, 3, 4, 5, 6])
 ```
 
 **3. Create the binary variables**
 ```python
 binvars = {}
-for l in df_fixcost.columns:
-    binvars[l] = LpVariable(l, 0, 1, LpBinary)
+for i in range(len(df.index)):
+    for j in range(len(df.columns)):
+        binvars[i+1, j+1] = LpVariable('%g_to_%g' % (i+1, j+1), cat=LpBinary)
 ```
 
-**4. Create the continuous variables**
+**4. Formulate the objective function**
 ```python
-contvars = {}
-for l in df_shipcost.index:
-    for r in df_shipcost.columns:
-        contvars[l, r] = LpVariable('%s_to_%s' % (l, r), 0, None, LpContinuous)
+model += sum(df._get_value(i, j) * binvars[(i, j)] for i in df.index for j in df.columns)
 ```
 
-**5. Formulate the objective function**
+**5. Formulate the constraints**
 ```python
-model += sum(df_fixcost[l].item() * binvars[l] for l in df_fixcost.columns) \
-         + sum(df_shipcost._get_value(df_shipcost.index.get_loc(l), df_shipcost.columns.get_loc(r), takeable=True) * contvars[(l, r)] for l in df_shipcost.index for r in df_shipcost.columns)
-```
+for i in df.index:
+    model += sum(binvars[(i, j)] for j in df.columns) == 1, '%g to j' % (i)
 
-**6. Formulate the constraints**
-```python
-for r in df_shipcost.columns:
-    model += sum(contvars[(l, r)] for l in df_shipcost.index) >= df_demand[r].item(), 'Demand Constraint of %s' % (r)
-for l in df_shipcost.index:
-    model += sum(contvars[(l, r)] for r in df_shipcost.columns) - 100 * binvars[l] <= 0, 'Delivery Amounts of %s' % (l)
-
-model += binvars['NewYork'] - binvars['LosAngeles'] <= 0, 'dc1'
-model += sum(binvars[l] for l in df_shipcost.index) <= 2, 'dc2'
-model += binvars['LosAngeles'] + binvars['Atlanta'] == 1, 'dc3'
+for j in df.columns:
+    model += sum(binvars[(i, j)] for i in df.index) == 1, 'i to %g' % (j)
 ```
 
 **7. Run the module**
@@ -142,15 +98,96 @@ model += binvars['LosAngeles'] + binvars['Atlanta'] == 1, 'dc3'
 model.solve()
 
 for v in model.variables():
-    print('%s: %g' % (v.name, v.varValue))
+    if v.varValue == 1:
+        print(v.name)
 ```
 
+## Branch-and-Bound Method
+
+### Initial Solution
+
+The first solution shows three subtours: **(1-2-1)(3-4-3)(5-6-5)** with only **26 people** moving in-between rooms. In essence, we are still far from the final answer since we only need a single, concrete path. <br /> <br />
+
+Arbitrarily, we shall cut off the path between projects 1 and 2 with additional constraints $(y_{12} = y_{21} = 0)$
+
+###  Case 1: $y_{12} = 0$
+```
+1_to_3
+2_to_6
+3_to_4
+4_to_5
+5_to_1
+6_to_2
+```
+This solution shows only two subtours: **(2-6-2)(1-3-4-5-1)** and still with only **26 people** moving in-between rooms.
+
+###  Case 2: $y_{21} = 0$
+```
+1_to_2
+2_to_6
+3_to_4
+4_to_3
+5_to_1
+6_to_5
+```
+This solution shows only two subtours: **(3-4-3)(1-2-6-5-1)** and still with only **26 people** moving in-between rooms. <br /><br />
+Both cases still show disconnected paths. Therefore, we shall further explore subcases within each case.
+
+
+###  Case 1a: $(y_{12} = 0)$ AND $(y_{26} = 0)$
+```
+1_to_3
+2_to_1
+3_to_4
+4_to_5
+5_to_6
+6_to_2
+```
+This solution shows a single path with **(1-3-4-5-6-2-1)** and still with **26 people** moving in-between rooms.
+
+###  Case 1b: $(y_{12} = 0)$ AND $(y_{62} = 0)$
+```
+1_to_3
+2_to_6
+3_to_4
+4_to_2
+5_to_1
+6_to_5
+```
+This solution shows a single path with **(1-3-4-2-6-5-1)** and still with **26 people** moving in-between rooms.
+
+
+###  Case 2a: $(y_{21} = 0)$ AND $(y_{34} = 0)$
+```
+1_to_2
+2_to_6
+3_to_1
+4_to_3
+5_to_4
+6_to_5
+```
+This solution shows a single path with **(1-2-6-5-4-3-1)** and still with **26 people** moving in-between rooms.
+
+###  Case 2b: $(y_{21} = 0)$ AND $(y_{43} = 0)$
+```
+1_to_3
+2_to_6
+3_to_1
+4_to_5
+5_to_4
+6_to_2
+```
+This solution shows a three subtours with **(1-3-1)(2-6-2)(4-5-4)** and with **26 people** moving in-between rooms. The complete analysis from this route will not be shown in this documentation; however, it was discovered that one subcase yielded worse Z values and another repeated the sequence form Case 1b.
+
+
 ## Results and Conclusion
+There are three possible sequences:
 
-In conclusion, it is recommended for the company to open warehouses in **Chicago** and in **Los Angeles**.
+* Projects 1, 3, 4, 5, 6, 2, and 1
+* Projects 1, 3, 4, 2, 6, 5, and 1
+* Projects 1, 2, 6, 5, 4, 3, and 1
 
-* The Chicago warehouse shall deliver 80 units to Region 1 and 20 units to Region 3.
-* The Los Angeles Warehouse shall deliver 70 units to Region 2 and 20 units to Region 3.
+Any of these sequences must be done by the manager (per week) to only have 26 people move in and out the room during meetings.
 
-This distribution plan will incur a total cost of $4810.
+
 
