@@ -154,3 +154,13 @@ model.solve()
 for v in model.variables():
     print('%s: %g' % (v.name, v.varValue))
 ```
+
+## Results and Conclusion
+
+In conclusion, it is recommended for the company to open warehouses in **Chicago** and in **Los Angeles**.
+
+* The Chicago warehouse shall deliver 80 units to Region 1 and 20 units to Region 3.
+* The Los Angeles Warehouse shall deliver 70 units to Region 2 and 20 units to Region 3.
+
+This distribution plan will incur a total cost of $4810.
+
