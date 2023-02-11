@@ -1,4 +1,4 @@
-# Warehouse Location Problem [1]
+# Traveling Salesperson Problem [1]
 #### *H. A. Taha, “Traveling Salesperson Problem: Problems,” in Operations research: An Introduction, 10th ed., Harlow, England: Pearson Educatin, 2017, pp. 461–462.*
 
 ## Problem
@@ -6,20 +6,10 @@
 A manager has a total of 10 employees working on six projects. Projects are reviewed weekly with each employee. A project may employ more than one employee resulting in  assignment overlaps, as the following table shows: <br /><br />
 </div>
 
-|               | Region 1 | Region 2 | Region 3 |
-| :-----------: | :------: | :------: | :------: |
-| New York      | 20       | 40       | 50       |
-| Los Angeles   | 48       | 15       | 26       |
-| Chicago       | 26       | 35       | 18       |
-| Atlanta       | 24       | 50       | 35       |
+![](Images/tsp_taha.png)
 
 <div align='justify';>
-We want to meet weekly demands at minimum cost, subject to the preceding information and the following restrictions:
-	
-1. If the New York warehouse is opened, then the Los Angeles warehouse must be opened.
-2. At most two warehouses can be opened.
-3. Either the Atlanta or the Los Angeles warehouse must be opened.
-	
+Currently, the manager meets individually once a week with each employee. Each meeting lasts about 20 min for a total of 3 hr and 20 min for all 10 employees. To reduce the total time, the manager wants to hold group meetings depending on shared projects. The objective is to schedule the meetings in a way that will reduce the traffic (number of employees) in and out of the meeting room.
 </div>
 
 ## Modeling
