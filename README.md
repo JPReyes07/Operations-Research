@@ -7,3 +7,7 @@ Operations Research (OR) is the mathematics of making better business decisions.
   The adaptability of information, skills, and tools in numerous sectors is an appealing quality of OR. Organizations and sectors widely use it for diverse objectives, ranging from agriculture, energy trading, production, and sales to the space industry, asset pricing, military operations, and demand forecasting. <br /> <br />
 
 </div>
+
+|Title          |Description    |Tool           |
+|:-------------:|:-------------:|:-------------:|
+|   |  | |
