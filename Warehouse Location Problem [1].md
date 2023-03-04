@@ -1,4 +1,4 @@
-# Warehouse Location Problem [1]
+# Warehouse Location Problem
 #### *W. L. Winston, “Integer Programming: Problems,” in Operations Research: Applications and Algorithms, 4th ed., Belmont , California: Duxbury Press, 2004, p. 503.*
 
 ## Problem
