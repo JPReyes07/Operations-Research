@@ -1,4 +1,5 @@
-# Traveling Salesperson Problem [1]
+# A Meeting Schedule Problem
+## Variation of the Traveling Salesperson Problem
 #### *H. A. Taha, “Traveling Salesperson Problem: Problems,” in Operations research: An Introduction, 10th ed., Harlow, England: Pearson Educatin, 2017, pp. 461–462.*
 
 ## Problem
