@@ -15,10 +15,6 @@ Operations Research (OR) is the mathematics of making better business decisions.
 |[A Warehouse Location Problem][WLP1]|A company seeks to build new warehouses in at least one of their four interested locations. In addition, the warehouses should minimize the fixed and delivery costs while meeting the demand of their customers.|<ul><li>Mixed Integer Linear Programming</li> <li>PuLP Python Library</li></ul>|
 |[A Job Sequencing Problem][JSP1]|The problem asks to find the sequence that minimizes the total cost given 5 jobs. One should take into account the processing times and due dates, as well as the associated costs incurred for any delays or interruptions.|<ul><li>Heuristic Programming</li> <li>Tabu Search Algorithm</li> <li>Python</li></ul>|
 
-
-
-
-
 [TSP1]: https://github.com/JPReyes07/Operations-Research/blob/db04998115078985b15e736deda8acd1ebe79542/Traveling%20Salesperson%20Problem%20%5B1%5D.md
 [TSP2]: https://github.com/JPReyes07/Operations-Research/blob/db04998115078985b15e736deda8acd1ebe79542/Traveling%20Salesperson%20Problem%20%5B2%5D.ipynb
 [WLP1]: https://github.com/JPReyes07/Operations-Research/blob/db04998115078985b15e736deda8acd1ebe79542/Warehouse%20Location%20Problem%20%5B1%5D.md
