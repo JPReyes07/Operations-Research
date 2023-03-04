@@ -1,4 +1,4 @@
-# Job Sequencing Problem [1]
+# A Job Sequencing Problem
 #### *H. A. Taha, “Heuristic Programming: Problems,” in Operations research: An Introduction, 10th ed., Harlow, England: Pearson Educatin, 2017, p. 426*
 
 ## Problem
