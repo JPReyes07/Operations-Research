@@ -8,6 +8,16 @@ Operations Research (OR) is the mathematics of making better business decisions.
 
 </div>
 
-|Title          |Description    |Tool           |
-|:-------------:|:-------------:|:-------------:|
-|   |  | |
+|Title                                  |Description                            |Tools                                   |
+|:---------------------------------------:|:--------------------------------------|:---------------------------------------|
+|[Traveling Salesperson Problem [1]][TSP1]|A manager aims to minimize the movement of employees when scheduling for project meetings, considering that the employees are working on several different projects.|<ul><li>Binary Integer Programming</li> <li>Branch and Bound Method</li> <li>PuLP Python Library</li></ul>|
+|[Traveling Salesperson Problem [2]][TSP2]|Given 11 nodes randomly placed in a 2D-coordinate systems, the path with the least cost and passes through each node once is sought.|<ul><li>Christofides Algorithm</li> <li>Networkx Python Library</li></ul>|
+|[Warehouse Location Problem [1]][WLP1]|A company seeks to build new warehouses in at least one of their four interested locations. In addition, the warehouses should minimize the fixed and delivery costs while meeting the demand of their customers.|<ul><li>Mixed Integer Linear Programming</li> <li>PuLP Python Library</li></ul>|
+
+
+
+
+
+[TSP1]: https://github.com/JPReyes07/Operations-Research/blob/db04998115078985b15e736deda8acd1ebe79542/Traveling%20Salesperson%20Problem%20%5B1%5D.md
+[TSP2]: https://github.com/JPReyes07/Operations-Research/blob/db04998115078985b15e736deda8acd1ebe79542/Traveling%20Salesperson%20Problem%20%5B2%5D.ipynb
+[WLP1]: https://github.com/JPReyes07/Operations-Research/blob/db04998115078985b15e736deda8acd1ebe79542/Warehouse%20Location%20Problem%20%5B1%5D.md
