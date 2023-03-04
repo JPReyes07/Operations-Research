@@ -1,165 +1,127 @@
 # Job Sequencing Problem [1]
-#### *W. L. Winston, “Integer Programming: Problems,” in Operations Research: Applications and Algorithms, 4th ed., Belmont , California: Duxbury Press, 2004, p. 503.*
+#### *H. A. Taha, “Heuristic Programming: Problems,” in Operations research: An Introduction, 10th ed., Harlow, England: Pearson Educatin, 2017, p. 426*
 
 ## Problem
 <div align='justify';>
-A company is considering opening warehouses in four cities: New York, Los Angeles, Chicago, and Atlanta. Each warehouse can ship 100 units per week. The weekly fixed cost of keeping each warehouse open is $400 for New York, $500 for Los Angeles, $300 for Chicago, and $150 for Atlanta. Region 1 of the country requires 80 units per week, region 2 requires 70 units per week, and region 3 requires 40 units per week. The costs (including production and shipping costs) of sending one unit from a plant to a region are shown in the table. <br /><br />
+Apply a Tabu Search Algorithm to solve the 5-job sequencing problem using the data below: <br /><br />
 </div>
 
-|               | Region 1 | Region 2 | Region 3 |
-| :-----------: | :------: | :------: | :------: |
-| New York      | 20       | 40       | 50       |
-| Los Angeles   | 48       | 15       | 26       |
-| Chicago       | 26       | 35       | 18       |
-| Atlanta       | 24       | 50       | 35       |
+|      Job      | Processing Time (days)| Due Date (days) | Holding Cost ($/day) | Penalty Cost ($/day) |
+| :-----: | :------: | :------: | :------: | :------: |
+| 1       | 10       | 12       | 3       | 10       |
+| 2   	  | 12       | 30       | 1       | 20       |
+| 3       | 5        | 9        | 5       | 12       |
+| 4       | 7        | 25       | 2       | 8        |
+| 5       | 9        | 40       | 4       | 15       |
 
 <div align='justify';>
-We want to meet weekly demands at minimum cost, subject to the preceding information and the following restrictions:
-	
-1. If the New York warehouse is opened, then the Los Angeles warehouse must be opened.
-2. At most two warehouses can be opened.
-3. Either the Atlanta or the Los Angeles warehouse must be opened.
-	
+We want to find the sequence of jobs that will minimize total cost
 </div>
 
 ## Modeling
-### Variable Definitions
-
-Let $x_{ij}$ be the amount of units shipped from city $i$ to region $j$ <br /><br />
-Let
-
-$$ y_{i} = \begin{cases}
-  \displaystyle 1; & \text{set up warehouse at city $i$} \\
-  \displaystyle 0; & \text{else}
-\end{cases}$$
-
-such that $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$
-
-### Objective Function
+### What is the Tabu Search Algorithm?
 
 <div align='justify';>
-The objective function is based on two important metrics: (1) the weekly fixed cost in maintaining the warehouse open and (2) the shipping costs to the regions. Given that the function is created from business costs, it is therefore necessary to minimize this model. <br /><br />
+Unlike linear programming, the Tabu Search Algorithm is a metaheuristic programming which is designed to find <b>good and approximate</b> solutions to complex combinatorial problems. Its defining characteristic lies on its <b>long-term memory</b> which stores explored solutions and avoids revisiting them to prevent certain modifications that lead to suboptimal solutions.
 </div>
 
-$$ Z = 400y_{N} + 500y_{L} + 300y_{C} + 150y_{A} + \sum\limits_{i} \sum\limits_{j} {c_{ij}x_{ij}} $$ <br /> 
+### Elements
 
-such that $c_{ij}$ refers to the shipping cost from city $i$ to region $j$ for all $i \in {(N, L, C, A)}$ and $j \in {(1, 2, 3)}$ as shown in the table.
-
-### Constraints
-
-**Demand Constraints**: <br />
-
-$$x_{N1}+x_{L1}+x_{C1}+x_{A1} = 80$$ <br />
-
-$$x_{N2}+x_{L2}+x_{C2}+x_{A2} = 70$$ <br />
-
-$$x_{N3}+x_{L3}+x_{C3}+x_{A3} = 40$$ <br />
-
-**Supply Constraints**: <br />
-
-$$x_{N1}+x_{N2}+x_{N3} \le 100y_{N}$$ <br />
-
-$$x_{L1}+x_{L2}+x_{L3} \le 100y_{L}$$ <br />
-
-$$x_{C1}+x_{C2}+x_{C3} \le 100y_{C}$$ <br />
-
-$$x_{A1}+x_{A2}+x_{A3} \le 100y_{A}$$ <br />
-
-**Decision Constraints**: <br />
-
-1. If the New York warehouse is opened, then the Los Angeles warehouse must be opened.
-
-$$y_{N} - y_{L} \le 0$$ 
-
-2. At most two warehouses can be opened.
-
-$$y_{N} + y_{L} + y_{C} + y_{A} \le 2$$ 
-
-3. Either the Atlanta or the Los Angeles warehouse must be opened.
-
-$$y_{L} + y_{A} = 1$$ 
-
-
-At the core of this algorithm lies the effective use of binary variables to lead the decision-making process on which city should warehouses be built. Here, if $y_{i}$ is 0, then the city will have **no** warehouse, and thus will not produce any units for the regions. Conversely, a value of one permits the production and delivery.
-<br /><br />
+1. **Number of Iterations, k**: Determines how long should the program run. Ideally, more iterations increase the chances of getting a near-optimal solution.
+2. **Tenure Period, tau**: The number of iterations for which a solution or is considered forbidden in the search. It determines the balance between exploration and exploitation in the search. Forbidden solutions are tracked through a **tabu list**.
+4. **Process of exchanging positions**: Up to the prerogative of the analyst, the swapping process drives which sequence contributes to the least cost. In this activity, the swapping of pairs is set randomly.
 
 ## Python Implementation
 
-**1. Instantiate the model through the PuLP module**
+**1. Import Pandas Library to display a dataframe of the givens
 ```python
-from pulp import *
-
-model = LpProblem('milp', LpMinimize)
+import pandas as pd
+import numpy as np
 ```
 
 **2. Create a dataframe of the necessary data**
 ```python
-import pandas as pd
+data = {'Jobs': [1, 2, 3, 4, 5],
+        'Process Times': [10, 12, 5, 7, 9],
+        'Due Dates': [12, 30, 9, 25, 40],
+        'Holding Costs': [3, 1, 5, 2, 4],
+        'Penalty Costs': [10, 20, 12, 8, 15]}
+df = pd.DataFrame(data)
 
-data_fixcost = {'NewYork': [400],
-                'LosAngeles': [500],
-                'Chicago': [300],
-                'Atlanta': [150]}
-
-data_shipcost = {'Region1': [20, 48, 26, 24],
-                 'Region2': [40, 15, 35, 50],
-                 'Region3': [50, 26, 18, 35]}
-
-data_demand = {'Region1': [80],
-               'Region2': [70],
-               'Region3': [40]}
-
-df_shipcost = pd.DataFrame(data_shipcost, index=['NewYork', 'LosAngeles', 'Chicago', 'Atlanta'])
-df_fixcost = pd.DataFrame(data_fixcost, index=['FixedCost'])
-df_demand = pd.DataFrame(data_demand, index=['Demand'])
+job = df.index.to_list()
 ```
 
-**3. Create the binary variables**
+**3. Create a function that overseers the pair swapping*
 ```python
-binvars = {}
-for l in df_fixcost.columns:
-    binvars[l] = LpVariable(l, 0, 1, LpBinary)
+def generate_switch(current, tabu_list):
+    neighbor = current.copy()
+    i, j = np.random.choice(5, 2, replace=False)
+    neighbor[i], neighbor[j] = neighbor[j], neighbor[i]
+    if tuple(neighbor) in tabu_list:
+        return current
+    return neighbor
 ```
 
-**4. Create the continuous variables**
+**4. Solve the total cost under a specific sequence**
 ```python
-contvars = {}
-for l in df_shipcost.index:
-    for r in df_shipcost.columns:
-        contvars[l, r] = LpVariable('%s_to_%s' % (l, r), 0, None, LpContinuous)
+def generate_cost(sequence):
+    df_sol = df.copy()
+    df_sol = df_sol.reindex(sequence)
+    df_sol['Completion Dates'] = df_sol['Process Times'].cumsum()
+
+    df_sol['Holding Time'] = df_sol['Due Dates'] - df_sol['Completion Dates']
+    df_sol['Holding Time'] = df_sol['Holding Time'].apply(lambda x: 0 if x < 0 else x)
+
+    df_sol['Delay Time'] = df_sol['Completion Dates'] - df_sol['Due Dates']
+    df_sol['Delay Time'] = df_sol['Delay Time'].apply(lambda x: 0 if x < 0 else x)
+
+    cost = np.sum(df_sol['Holding Costs'] * df_sol['Holding Time']) + np.sum(df_sol['Penalty Costs'] * df_sol['Delay Time'])
+    return cost
 ```
 
-**5. Formulate the objective function**
+**5. Implement the Tabu Search**
 ```python
-model += sum(df_fixcost[l].item() * binvars[l] for l in df_fixcost.columns) \
-         + sum(df_shipcost._get_value(df_shipcost.index.get_loc(l), df_shipcost.columns.get_loc(r), takeable=True) * contvars[(l, r)] for l in df_shipcost.index for r in df_shipcost.columns)
+def tabu(jobs, iterations, tenure):
+    best_cost = generate_cost(jobs)
+    best_sequence = jobs
+
+    tabu_list = [tuple(best_sequence)]
+
+    for i in range(iterations):
+        current = generate_switch(best_sequence, tabu_list)
+        current_cost = generate_cost(current)
+
+        if current_cost <= best_cost:
+            best_cost = current_cost
+            best_sequence = current
+
+        if len(tabu_list) >= tenure:
+            tabu_list.pop(0)
+        tabu_list.append(tuple(current))
+
+    return best_sequence, best_cost
 ```
 
-**6. Formulate the constraints**
+**6. Set the parameters and run the process**
 ```python
-for r in df_shipcost.columns:
-    model += sum(contvars[(l, r)] for l in df_shipcost.index) >= df_demand[r].item(), 'Demand Constraint of %s' % (r)
-for l in df_shipcost.index:
-    model += sum(contvars[(l, r)] for r in df_shipcost.columns) - 100 * binvars[l] <= 0, 'Delivery Amounts of %s' % (l)
+k = 1000
+t = 3
 
-model += binvars['NewYork'] - binvars['LosAngeles'] <= 0, 'dc1'
-model += sum(binvars[l] for l in df_shipcost.index) <= 2, 'dc2'
-model += binvars['LosAngeles'] + binvars['Atlanta'] == 1, 'dc3'
+df_seq, df_cost = tabu(job, k, t)
+df_out = df.reindex(df_seq)
+
+print('The sequence', df_out['Jobs'].to_list(), 'has the lowest cost with $%g' % (df_cost))
 ```
 
-**7. Run the module**
-```python
-model.solve()
-
-for v in model.variables():
-    print('%s: %g' % (v.name, v.varValue))
-```
 
 ## Results and Conclusion
+```
+Jobs  Process Times  Due Dates  Holding Costs  Penalty Costs
+  1         10          12            3             10
+  2         12          30            1             20
+  3          5           9            5             12
+  4          7          25            2              8
+  5          9          40            4             15 
 
-In conclusion, it is recommended for the company to open warehouses in **Chicago** and in **Los Angeles**.
-
-* The Chicago warehouse shall deliver 80 units to Region 1 and 20 units to Region 3.
-* The Los Angeles Warehouse shall deliver 70 units to Region 2 and 20 units to Region 3.
-
-This distribution plan will incur a total cost of $4810.
+The sequence [3, 1, 2, 4, 5] has the least cost with $170
+```
