@@ -1,4 +1,7 @@
 # A Meeting Schedule Problem
+
+created by JPR
+
 ### *Variation of the Traveling Salesperson Problem*
 #### *H. A. Taha, “Traveling Salesperson Problem: Problems,” in Operations research: An Introduction, 10th ed., Harlow, England: Pearson Educatin, 2017, pp. 461–462.*
 
